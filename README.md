@@ -23,3 +23,5 @@ For more details, see the documentation for each chart:
 ## License
 
 Helm charts for EAASI are distributed under the [Apache-2.0](./LICENSE) license.
+
+Copyright (c) 2025 Yale University (unless otherwise noted).
