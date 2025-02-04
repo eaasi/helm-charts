@@ -60,6 +60,11 @@ split_commits = false
 sort_commits = "oldest"
 topo_order = false
 
+commit_preprocessors = [
+  # Replace issue references with their remote link template
+  { pattern = '([\(\s]+)#([0-9]+)', replace = "${1}[#${2}](<REPO-URL>/issues/${2})"},
+]
+
 commit_parsers = [
   { message = "^feat", group = "1: Features" },
   { message = "^fix", group = "2: Bug Fixes" },
