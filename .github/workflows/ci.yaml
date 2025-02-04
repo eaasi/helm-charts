@@ -1,0 +1,29 @@
+name: CI
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+  RUST_BACKTRACE: 1
+
+jobs:
+  spelling:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Run spell checker
+      uses: crate-ci/typos@v1.29.7
+      with:
+        config: ./configs/typos.toml
