@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Reusable workflow for running various checks on Helm charts
+
+name: checks
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  spell-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run spell checker
+        uses: crate-ci/typos@v1.29.7
+        with:
+          config: ./configs/typos.toml
