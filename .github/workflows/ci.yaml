@@ -17,6 +17,12 @@ env:
   CLICOLOR: 1
   RUST_BACKTRACE: 1
 
+  # Fetch whole history if workflow was triggered by a pull-request
+  CHART_TESTING_FETCH_DEPTH: ${{ (github.event_name == 'pull_request') && 0 || 1 }}
+
+  # Enable change detection if workflow was triggered by a pull-request, else check all charts
+  CHART_TESTING_ARGS: ${{ (github.event_name == 'pull_request') && '--target-branch main' || '--all' }}
+
 jobs:
   spelling:
     runs-on: ubuntu-latest
@@ -27,3 +33,24 @@ jobs:
       uses: crate-ci/typos@v1.29.7
       with:
         config: ./configs/typos.toml
+
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ env.CHART_TESTING_FETCH_DEPTH }}
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.17.0
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+        check-latest: true
+    - name: Install chart-testing
+      uses: helm/chart-testing-action@v2.7.0
+    - name: Run chart linters and validators
+      run: ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }}
