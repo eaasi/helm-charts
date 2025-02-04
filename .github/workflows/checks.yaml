@@ -44,3 +44,22 @@ jobs:
           # Enable change detection if workflow was triggered for non-main branch, else check all charts
           CHART_TESTING_ARGS: ${{ (github.ref != 'refs/heads/main') && '--target-branch main' || '--all' }}
         run: ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }}
+
+  testing:
+    runs-on: ubuntu-latest
+    needs:
+      - spelling
+      - validation
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Start Minikube cluster
+        uses: medyagh/setup-minikube@v0.0.20
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.0
+      - name: Install chart-testing
+        uses: helm/chart-testing-action@v2.7.0
+      - name: Install and test charts
+        run: ct install --config ./configs/chart-testing.yaml --all
