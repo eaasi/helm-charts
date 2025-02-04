@@ -24,6 +24,9 @@ body = """
 {%     set short_sha = commit.id | truncate(length=7, end="") -%}
 {%     set commit_url = "<REPO-URL>/commit/" ~ commit.id -%}
 {%     set ref = "[`" ~ short_sha ~ "`](" ~ commit_url ~ ")" -%}
+{%     if commit.remote.username -%}
+{%       set ref = ref ~ " by @" ~ commit.remote.username -%}
+{%     endif -%}
 - {{ message }} - ({{ ref }})
 {%   endfor -%}
 {% endfor -%}
