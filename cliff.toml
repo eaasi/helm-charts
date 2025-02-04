@@ -31,6 +31,12 @@ body = """
 {%       set ref = ref ~ " in [#" ~ pr_num ~ "](" ~ pr_url ~ ")" -%}
 {%     endif -%}
 - {{ message }} - ({{ ref }})
+{%     set include_commit_body = get_env(name="cliff_include_commit_body", default="false") -%}
+{%     set include_commit_body = include_commit_body == "true" -%}
+{%     if include_commit_body and commit.body %}
+  {{ commit.body | indent(prefix="  ") }}
+
+{%     endif -%}
 {%   endfor -%}
 {% endfor -%}
 """
