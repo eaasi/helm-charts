@@ -6,6 +6,11 @@
 name: checks
 on:
   workflow_call:
+    inputs:
+      enable-change-detection:
+        description: Enable change detection
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -14,6 +19,31 @@ env:
   CLICOLOR: 1
 
 jobs:
+  helm-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch whole history required for change detection (if enabled)
+          fetch-depth: ${{ (inputs.enable-change-detection) && '0' || '1' }}
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          check-latest: true
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.0
+      - name: Install chart-testing
+        uses: helm/chart-testing-action@v2.7.0
+      - name: Run chart linters and validators
+        env:
+          # Enable change detection if explicitly requested, else check all charts
+          CHART_TESTING_ARGS: ${{ (inputs.enable-change-detection) && '--target-branch main' || '--all' }}
+        run: ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }}
+
   spell-checker:
     runs-on: ubuntu-latest
     steps:
