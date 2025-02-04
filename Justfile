@@ -7,6 +7,10 @@ config_dir := "./configs"
 spellcheck:
   typos --config "{{ config_dir }}/typos.toml"
 
+# Run chart linter
+lint chart="*":
+  helm lint "{{ chart_dir / chart }}"
+
 # Update chart's changelog
 update-changelog chart version="" dir=(chart_dir / chart):
   #!/usr/bin/env -S sh -eu -o allexport
