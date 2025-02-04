@@ -11,6 +11,10 @@ spellcheck:
 typocheck:
   typos --config "{{ config_dir }}/typos.toml"
 
+# Run chart linter
+lint chart="*":
+  helm lint {{ chart_dir / chart }}
+
 # Update chart's changelog
 update-changelog chart:
   #!/usr/bin/env sh
