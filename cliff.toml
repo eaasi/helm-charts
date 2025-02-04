@@ -27,6 +27,11 @@ body = """
 {%     if commit.remote.username -%}
 {%       set ref = ref ~ " by @" ~ commit.remote.username -%}
 {%     endif -%}
+{%     if commit.remote.pr_number -%}
+{%       set pr_num = commit.remote.pr_number -%}
+{%       set pr_url = "<REPO-URL>/pull/" ~ pr_num -%}
+{%       set ref = ref ~ " in [#" ~ pr_num ~ "](" ~ pr_url ~ ")" -%}
+{%     endif -%}
 - {{ message }} - ({{ ref }})
 {%   endfor -%}
 {% endfor -%}
