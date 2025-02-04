@@ -24,6 +24,10 @@ body = """
 {%     set short_sha = commit.id | truncate(length=7, end="") -%}
 {%     set commit_url = "<REPO-URL>/commit/" ~ commit.id -%}
 - {{ message }} -- [`{{ short_sha }}`]({{ commit_url }})
+{%     if commit.body %}
+  {{ commit.body | indent(prefix="  ") }}
+
+{%     endif -%}
 {%   endfor -%}
 {% endfor -%}
 """
