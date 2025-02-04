@@ -39,6 +39,8 @@ The more detailed changelog for `{{ tag }}` can be found [here]({{ diff_url }}).
 """
 
 postprocessors = [
+  # Replace issue references with their remote link template
+  { pattern = '([\(\s]+)#([0-9]+)', replace = "${1}[#${2}](<REPO-URL>/issues/${2})"},
   # Replace repository placeholder with the real URL
   { pattern = "<REPO-URL>", replace = "https://github.com/eaasi/helm-charts" },
 ]
