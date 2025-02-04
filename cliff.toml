@@ -13,6 +13,7 @@ body = """
 {% else -%}
 ## Unreleased
 {% endif -%}
+{% set include_commit_body = false -%}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | split(pat=":") | last | trim }}
 
@@ -33,6 +34,10 @@ body = """
 {%       set ref = ref ~ " in [#" ~ pr_num ~ "](" ~ pr_url ~ ")" -%}
 {%     endif -%}
 - {{ message }} - ({{ ref }})
+{%     if include_commit_body and commit.body %}
+  {{ commit.body | indent(prefix="  ") }}
+
+{%     endif -%}
 {%   endfor -%}
 {% endfor -%}
 """
