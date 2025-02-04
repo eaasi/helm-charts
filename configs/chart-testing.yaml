@@ -1,0 +1,6 @@
+# chart-testing configuration (https://github.com/helm/chart-testing)
+
+validate-maintainers: false
+remote: origin
+chart-dirs:
+  - charts

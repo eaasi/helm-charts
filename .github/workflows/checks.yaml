@@ -19,3 +19,28 @@ jobs:
         uses: crate-ci/typos@v1.29.7
         with:
           config: ./configs/typos.toml
+
+  validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch whole history if workflow was triggered for non-main branch
+          fetch-depth: ${{ (github.ref != 'refs/heads/main') && '0' || '1' }}
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.0
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          check-latest: true
+      - name: Install chart-testing
+        uses: helm/chart-testing-action@v2.7.0
+      - name: Run chart linters and validators
+        env:
+          # Enable change detection if workflow was triggered for non-main branch, else check all charts
+          CHART_TESTING_ARGS: ${{ (github.ref != 'refs/heads/main') && '--target-branch main' || '--all' }}
+        run: ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }}
