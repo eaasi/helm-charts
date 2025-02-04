@@ -6,6 +6,10 @@ spellcheck:
 typocheck:
   typos --config ./configs/typos.toml
 
+# Run chart linter
+lint chart="*":
+  helm lint ./charts/{{ chart }}
+
 # Update chart's changelog
 update-changelog chart:
   #!/usr/bin/env sh
