@@ -39,6 +39,10 @@ body = """
 {%     endif -%}
 {%   endfor -%}
 {% endfor -%}
+{% if previous.version -%}
+{%   set diff_url = "<REPO-URL>/compare/" ~ previous.version ~ ".." ~ version %}
+The more detailed changelog for `{{ version }}` can be found [here]({{ diff_url }}).
+{% endif -%}
 """
 
 postprocessors = [
