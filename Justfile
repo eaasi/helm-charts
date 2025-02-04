@@ -15,6 +15,15 @@ typocheck:
 lint chart="*":
   helm lint {{ chart_dir / chart }}
 
+# Run chart validator
+validate chart="*":
+  docker run -t --rm --network="host" \
+    --workdir="/data" \
+    --volume="$PWD:/data:ro" \
+    "quay.io/helmpack/chart-testing:v3.7.1" \
+    ct lint --config "{{ config_dir }}/chart-testing.yaml" \
+      {{ if chart == "*" { "--all" } else { '--charts "' + (chart_dir / chart) + '"' } }}
+
 # Update chart's changelog
 update-changelog chart:
   #!/usr/bin/env sh
