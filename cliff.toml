@@ -13,6 +13,7 @@ body = """
 {% else -%}
 ## Unreleased
 {% endif -%}
+{% set include_commit_body = false -%}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | split(pat=":") | last | trim }}
 
@@ -24,6 +25,10 @@ body = """
 {%     set short_sha = commit.id | truncate(length=7, end="") -%}
 {%     set commit_url = "<REPO-URL>/commit/" ~ commit.id -%}
 - {{ message }} -- [`{{ short_sha }}`]({{ commit_url }})
+{%     if include_commit_body and commit.body %}
+  {{ commit.body | indent(prefix="  ") }}
+
+{%     endif -%}
 {%   endfor -%}
 {% endfor -%}
 """
