@@ -40,6 +40,11 @@ body = """
 {%     endif -%}
 {%   endfor -%}
 {% endfor -%}
+{% if previous.version -%}
+{%   set tag = version | default(value="HEAD") -%}
+{%   set diff_url = "<REPO-URL>/compare/" ~ previous.version ~ ".." ~ tag %}
+The more detailed changelog for `{{ tag }}` can be found [here]({{ diff_url }}).
+{% endif -%}
 """
 
 postprocessors = [
