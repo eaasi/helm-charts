@@ -1,0 +1,57 @@
+# git-cliff configuration (https://github.com/orhun/git-cliff)
+
+[changelog]
+trim = false
+
+header = """
+# Changelog
+"""
+
+body = """
+{% if version %}
+## {{ version | split(pat="-") | last }} - *{{ timestamp | date(format="%Y-%m-%d") }}*
+{% else -%}
+## Unreleased
+{% endif -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | split(pat=":") | last | trim }}
+
+{%   for commit in commits -%}
+{%     set message = commit.message | upper_first -%}
+{%     if commit.breaking -%}
+{%       set message = "(**!**) " ~ message -%}
+{%     endif -%}
+{%     set short_sha = commit.id | truncate(length=7, end="") -%}
+{%     set commit_url = "<REPO-URL>/commit/" ~ commit.id -%}
+{%     set ref = "[`" ~ short_sha ~ "`](" ~ commit_url ~ ")" -%}
+- {{ message }} - ({{ ref }})
+{%   endfor -%}
+{% endfor -%}
+"""
+
+postprocessors = [
+  # Replace repository placeholder with the real URL
+  { pattern = "<REPO-URL>", replace = "https://github.com/eaasi/helm-charts" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+filter_commits = false
+split_commits = false
+sort_commits = "oldest"
+topo_order = false
+
+commit_parsers = [
+  { message = "^feat", group = "1: Features" },
+  { message = "^fix", group = "2: Bug Fixes" },
+  { message = "^refactor", group = "3: Refactoring" },
+  { message = "^test", group = "4: Testing" },
+  { message = "^ci", group = "5: Continuous Integration" },
+  { message = "^docs", group = "6: Documentation" },
+  { message = ".*", group = "7: Miscellaneous" },
+]
+
+[remote.github]
+owner = "eaasi"
+repo = "helm-charts"
