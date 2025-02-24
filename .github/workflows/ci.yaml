@@ -24,6 +24,25 @@ env:
   CHART_TESTING_ARGS: ${{ (github.event_name == 'pull_request') && '--target-branch main' || '--all' }}
 
 jobs:
+  commit-style:
+    runs-on: ubuntu-latest
+    steps:
+    - id: commit-range
+      name: Determine commit range
+      uses: bitforr/commit-range-action@v0.5
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ steps.commit-range.outputs.fetch-depth }}
+    - name: Run commit style linter
+      uses: crate-ci/committed@v1.1.5
+      with:
+        args: -v --config ./configs/committed.toml ${{ env.COMMITTED_ARGS }}
+        commits: ${{ steps.commit-range.outputs.commit-range }}
+      env:
+        # Disallow merge commits to be present in pull-requests
+        COMMITTED_ARGS: ${{ (github.event_name == 'pull_request') && '--no-merge-commit' }}
+
   spelling:
     runs-on: ubuntu-latest
     steps:
