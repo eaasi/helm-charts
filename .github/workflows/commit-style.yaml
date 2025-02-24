@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Workflow for enforcing commit style conventions
+
+name: commit-style
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  commit-linter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history for merge-base detection!
+          fetch-depth: 0
+      - id: commit-range
+        name: Determine commit range
+        uses: eaasi/commit-range-action@v0.5
+      - name: Install commit style linter
+        uses: ./.github/actions/setup-committed
+      - name: Run commit style linter
+        run: |
+          range="${{ steps.commit-range.outputs.commit-range }}"
+          echo "Linting commits:"
+          git log --color=always --graph --oneline "${range:?}" || true
+          echo ""
+          committed -vv --color=always \
+            --config ./configs/committed.toml \
+            "${range}"
+          echo "DONE: Commits follow the required style conventions."
