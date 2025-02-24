@@ -35,7 +35,8 @@ jobs:
       - &install-helm-step
         name: Install Helm
         uses: ./.github/actions/setup-helm
-      - name: Install chart-testing
+      - &install-ct-step
+        name: Install chart-testing
         uses: helm/chart-testing-action@v2.7.0
       - name: Run chart linters and validators
         env:
@@ -53,8 +54,7 @@ jobs:
       - name: Start Minikube cluster
         uses: medyagh/setup-minikube@v0.0.20
       - *install-helm-step
-      - name: Install chart-testing
-        uses: helm/chart-testing-action@v2.7.0
+      - *install-ct-step
       - name: Install and test charts
         run: ct install --config ./configs/chart-testing.yaml --all
 
