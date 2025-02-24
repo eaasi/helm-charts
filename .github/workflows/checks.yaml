@@ -10,6 +10,22 @@ env:
   RUST_BACKTRACE: 1
 
 jobs:
+  commit-style:
+    runs-on: ubuntu-latest
+    steps:
+      - id: commit-range
+        name: Determine commit range
+        uses: eaasi/commit-range-action@v0.5
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run commit style linter
+        uses: crate-ci/committed@v1.1.5
+        with:
+          args: -v --config ./configs/committed.toml
+          commits: ${{ steps.commit-range.outputs.commit-range }}
+
   spelling:
     runs-on: ubuntu-latest
     steps:
