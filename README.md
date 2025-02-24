@@ -99,6 +99,20 @@ $ just cluster-stop <name>
 $ just cluster-delete <name>
 ```
 
+### Deployment
+
+Before deploying anything, the chart repositories for all dependencies must be added with:
+
+```console
+$ just add-chart-repos
+```
+
+Next, rebuild all required chart dependencies with:
+
+```console
+$ just build-chart-deps
+```
+
 ## License
 
 Helm charts for EAASI are distributed under the [Apache-2.0](./LICENSE) license.
