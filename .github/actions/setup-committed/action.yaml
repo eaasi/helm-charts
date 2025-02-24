@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+name: setup-committed
+description: Helper for installing Committed
+runs:
+  using: composite
+  steps:
+    - name: Install Committed
+      uses: jaxxstorm/action-install-gh-release@v2.1.0
+      with:
+        repo: crate-ci/committed
+        tag: v1.1.7
