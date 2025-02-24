@@ -43,6 +43,47 @@ update-changelog chart version="" dir=(chart_dir / chart):
     --include-path "{{ dir }}/**" \
     --prepend "{{ dir }}/CHANGELOG.md"
 
+### HELM ######################################################################
+
+# Add external chart repositories
+add-chart-repos:
+  # TODO: add repos!
+
+# Build dependencies for all charts
+build-chart-deps:
+  #!/usr/bin/env -S sh -eu
+  charts=$(ls "{{ chart_dir }}/")
+  for chart in $charts; do
+    just dep-build "$chart"
+  done
+
+# Build Helm chart's dependencies from its lock file
+dep-build chart *args="--skip-refresh":
+  helm dependency build "{{ chart_dir / chart }}" {{ args }}
+
+# Update Helm chart's on-disk dependencies
+dep-update chart *args="--skip-refresh":
+  helm dependency update "{{ chart_dir / chart }}" {{ args }}
+
+# Install a Helm chart
+install chart name=chart ns=namespace *args="":
+  helm install "{{ name }}" "{{ chart_dir / chart }}" \
+    --namespace "{{ ns }}" --create-namespace {{ args }}
+
+# Uninstall a Helm chart release
+uninstall release ns=namespace *args="":
+  helm uninstall "{{ release }}" --namespace "{{ ns }}" {{ args }}
+
+# Upgrade a Helm chart release
+upgrade chart release=chart ns=namespace *args="":
+  helm upgrade "{{ release }}" "{{ chart_dir / chart }}" \
+    --install --namespace "{{ ns }}" --create-namespace {{ args }}
+
+# Render a Helm chart
+render chart name=chart ns=namespace *args="":
+  helm template "{{ name }}" "{{ chart_dir / chart }}" \
+    --namespace "{{ ns }}" {{ args }} | less
+
 ### MINIKUBE ##################################################################
 
 # Start a Minikube cluster
