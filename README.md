@@ -77,6 +77,28 @@ $ just dep-build <chart>   # rebuild deps from Chart.lock file
 $ just dep-update <chart>  # update deps to mirror Chart.yaml
 ```
 
+### Minikube Management
+
+A local [Minikube](https://minikube.sigs.k8s.io) cluster can be created with:
+
+```console
+$ just cluster-start <name>
+```
+
+A running Minikube cluster can be paused and resumed later with:
+
+```console
+$ just cluster-pause <name>
+$ just cluster-unpause <name>
+```
+
+When a local Minikube cluster is not needed anymore, it can be stopped or deleted with:
+
+```console
+$ just cluster-stop <name>
+$ just cluster-delete <name>
+```
+
 ## License
 
 Helm charts for EAASI are distributed under the [Apache-2.0](./LICENSE) license.
