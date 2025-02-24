@@ -7,6 +7,9 @@ cluster := "eaasi"
 # Name of the cluster namespace
 namespace := "eaasi"
 
+# External chart repositories
+cnpg_chart_repo_url := "https://cloudnative-pg.github.io/charts"
+
 ### HELPERS ###################################################################
 
 # Run spell checker
@@ -28,6 +31,7 @@ validate chart="*":
     --volume="$PWD:/data" \
     "quay.io/helmpack/chart-testing:v3.7.1" \
     ct lint --config "{{ config_dir }}/chart-testing.yaml" \
+      --chart-repos "cnpg={{ cnpg_chart_repo_url }}" \
       {{ if chart == "*" { "--all" } else { '--charts "' + (chart_dir / chart) + '"' } }}
 
 # Update chart's changelog
@@ -38,6 +42,31 @@ update-changelog chart:
   git cliff --bump --unreleased \
     --tag-pattern "{{ chart }}-.+" \
     --prepend "CHANGELOG.md"
+
+### HELM ######################################################################
+
+# Add required chart repositories
+add-chart-repos:
+  helm repo add cnpg "{{ cnpg_chart_repo_url }}"
+
+# Install a Helm chart
+install chart name=chart ns=namespace *args="":
+  helm install "{{ name }}" "{{ chart_dir / chart }}" \
+    --namespace "{{ ns }}" --create-namespace {{ args }}
+
+# Uninstall a Helm chart release
+uninstall release ns=namespace *args="":
+  helm uninstall "{{ release }}" --namespace "{{ ns }}" {{ args }}
+
+# Upgrade a Helm chart release
+upgrade chart release=chart ns=namespace *args="":
+  helm upgrade "{{ release }}" "{{ chart_dir / chart }}" \
+    --install --namespace "{{ ns }}" --create-namespace {{ args }}
+
+# Render a Helm chart
+render chart name=chart ns=namespace *args="":
+  helm template "{{ name }}" "{{ chart_dir / chart }}" \
+    --namespace "{{ ns }}" {{ args }} | less
 
 ### MINIKUBE ##################################################################
 
