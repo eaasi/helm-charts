@@ -1,6 +1,12 @@
 chart_dir := "./charts"
 config_dir := "./configs"
 
+# Name of the Minikube cluster
+cluster := "eaasi"
+
+# Name of the cluster namespace
+namespace := "eaasi"
+
 ### HELPERS ###################################################################
 
 # Run spell checker
@@ -32,3 +38,28 @@ update-changelog chart:
   git cliff --bump --unreleased \
     --tag-pattern "{{ chart }}-.+" \
     --prepend "CHANGELOG.md"
+
+### MINIKUBE ##################################################################
+
+# Start a Minikube cluster
+cluster-start name=cluster ns=namespace:
+  minikube start --profile "{{ name }}" \
+    --namespace "{{ ns }}" \
+    --force-systemd \
+    --cni "cilium"
+
+# Stop a Minikube cluster
+cluster-stop name=cluster:
+  minikube stop --profile "{{ name }}"
+
+# Pause a Minikube cluster
+cluster-pause name=cluster:
+  minikube pause --profile "{{ name }}" --all-namespaces
+
+# Unpause a Minikube cluster
+cluster-unpause name=cluster:
+  minikube unpause --profile "{{ name }}" --all-namespaces
+
+# Delete a Minikube cluster
+cluster-delete name=cluster:
+  minikube delete --profile "{{ name }}"
