@@ -21,6 +21,8 @@ env:
 jobs:
   helm-linter:
     runs-on: ubuntu-latest
+    env:
+      CHART_TESTING_LOG: chart-testing.log
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -48,7 +50,15 @@ jobs:
         env:
           # Enable change detection if explicitly requested, else check all charts
           CHART_TESTING_ARGS: ${{ (inputs.enable-change-detection) && '--target-branch main' || '--all' }}
-        run: ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }}
+        run: |
+          set -o pipefail
+          ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }} \
+            | tee "${{ env.CHART_TESTING_LOG }}"
+      - id: ct-log-parser
+        name: Parse chart-testing logs
+        uses: eaasi/chart-list-action@v0.3
+        with:
+          ct-log-file: ${{ env.CHART_TESTING_LOG }}
 
   helm-tester:
     runs-on: ubuntu-latest
