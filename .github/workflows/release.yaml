@@ -127,6 +127,7 @@ jobs:
       - name: Upload chart package
         run: |
           cr upload --config "${{ env.CR_CONFIG_FILE }}" \
+            --release-notes-file "${{ env.RELEASE_NOTES_FILE_NAME }}" \
             --token "${{ secrets.GITHUB_TOKEN }}" \
             --commit "${{ github.sha }}"
       - name: Update chart repository index
