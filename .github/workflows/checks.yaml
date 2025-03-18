@@ -11,6 +11,10 @@ on:
         description: Enable change detection
         default: false
         type: boolean
+    outputs:
+      charts:
+        description: List of validated charts
+        value: ${{ jobs.helm-linter.outputs.charts }}
 
 permissions:
   contents: read
@@ -21,6 +25,8 @@ env:
 jobs:
   helm-linter:
     runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.ct-log-parser.outputs.charts }}
     env:
       CHART_TESTING_LOG: chart-testing.log
     steps:
