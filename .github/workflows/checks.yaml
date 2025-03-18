@@ -11,6 +11,10 @@ on:
         description: Enable change detection
         default: false
         type: boolean
+      chart:
+        description: Limit checks to a specific chart
+        default: ''
+        type: string
     outputs:
       charts:
         description: List of validated charts
@@ -53,12 +57,19 @@ jobs:
         name: Add external chart repositories
         run: just add-chart-repos
       - name: Run chart linters and validators
-        env:
-          # Enable change detection if explicitly requested, else check all charts
-          CHART_TESTING_ARGS: ${{ (inputs.enable-change-detection) && '--target-branch main' || '--all' }}
         run: |
           set -o pipefail
-          ct lint --config ./configs/chart-testing.yaml ${{ env.CHART_TESTING_ARGS }} \
+          if ${{ inputs.enable-change-detection }}; then
+            # Enable change detection if requested
+            set -- "--target-branch" "main"
+          elif test -n "${{ inputs.chart }}"; then
+            # Process only the specified chart
+            set -- "--charts" "./charts/${{ inputs.chart }}"
+          else
+            # Process all charts
+            set -- "--all"
+          fi
+          ct lint --config ./configs/chart-testing.yaml "$@" \
             | tee "${{ env.CHART_TESTING_LOG }}"
       - id: ct-log-parser
         name: Parse chart-testing logs
