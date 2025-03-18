@@ -3,3 +3,4 @@
 pages-branch: pages
 skip-existing: true
 make-release-latest: false
+release-notes-file: RELEASE.md
