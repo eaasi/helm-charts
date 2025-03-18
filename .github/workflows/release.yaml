@@ -103,10 +103,16 @@ jobs:
         run: |
           git config user.name "${{ github.event.pusher.name }}"
           git config user.email "${{ github.event.pusher.email }}"
+      - name: Install Just
+        uses: ./.github/actions/setup-just
+      - name: Install Helm
+        uses: ./.github/actions/setup-helm
       - name: Install chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
           install_only: true
+      - name: Add external chart repositories
+        run: just add-chart-repos
       - name: Package requested chart
         run: |
           cr package "${{ needs.chart-info.outputs.path }}" \
