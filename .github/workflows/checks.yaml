@@ -75,6 +75,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Install Just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
       - name: Start Minikube cluster
         uses: medyagh/setup-minikube@v0.0.20
       - name: Install Helm
@@ -83,5 +87,7 @@ jobs:
           version: v3.17.0
       - name: Install chart-testing
         uses: helm/chart-testing-action@v2.7.0
+      - name: Add external chart repositories
+        run: just add-chart-repos
       - name: Install and test charts
         run: ct install --config ./configs/chart-testing.yaml --all
