@@ -95,3 +95,27 @@ jobs:
         uses: crate-ci/typos@v1.29.7
         with:
           config: ./configs/typos.toml
+
+  changelog-checker:
+    runs-on: ubuntu-latest
+    needs:
+      - helm-linter
+      - spell-checker
+    if: ${{ needs.helm-linter.outputs.charts != '[]' }}
+    strategy:
+      matrix:
+        chart: ${{ fromJSON(needs.helm-linter.outputs.charts) }}
+    env:
+      CHANGELOG_FILE: ${{ matrix.chart.path }}/CHANGELOG.md
+    steps:
+      - name: Checkout chart's changelog
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ env.CHANGELOG_FILE }}
+      - name: Check chart's changelog
+        uses: eaasi/release-notes-action@v0.6
+        with:
+          changelog-file: ${{ env.CHANGELOG_FILE }}
+          release-version: ${{ matrix.chart.name }}-${{ matrix.chart.version }}
+        # Ignore missing changelogs for default chart version
+        continue-on-error: ${{ matrix.chart.version == '0.1.0' }}
