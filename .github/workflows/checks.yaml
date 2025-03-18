@@ -32,12 +32,16 @@ jobs:
         with:
           python-version: '3.x'
           check-latest: true
+      - name: Install Just
+        uses: ./.github/actions/setup-just
       - &install-helm-step
         name: Install Helm
         uses: ./.github/actions/setup-helm
       - &install-ct-step
         name: Install chart-testing
         uses: helm/chart-testing-action@v2.7.0
+      - name: Add external chart repositories
+        run: just add-chart-repos
       - name: Run chart linters and validators
         env:
           # Enable change detection if explicitly requested, else check all charts
