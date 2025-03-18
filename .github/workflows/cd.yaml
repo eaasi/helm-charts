@@ -32,6 +32,16 @@ jobs:
         run: |
           git config user.name "${{ github.event.pusher.name }}"
           git config user.email "${{ github.event.pusher.email }}"
+      - name: Install Just
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.17.0
+      - name: Add external chart repositories
+        run: just add-chart-repos
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.7.0
         with:
