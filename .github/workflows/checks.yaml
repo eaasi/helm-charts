@@ -79,8 +79,12 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: just
-      - name: Start Minikube cluster
+      - name: Install Minikube
         uses: medyagh/setup-minikube@v0.0.20
+        with:
+          start: false
+      - name: Start Minikube cluster
+        run: just cluster-start
       - name: Install Helm
         uses: azure/setup-helm@v4
         with:
