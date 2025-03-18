@@ -1,0 +1,123 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Workflow for packaging and releasing Helm charts
+
+name: release
+on:
+  push:
+    tags:
+      - '**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  tag-parser:
+    runs-on: ubuntu-latest
+    outputs:
+      chart: ${{ steps.refname-parsing.outputs.chart }}
+      version: ${{ steps.refname-parsing.outputs.version }}
+    steps:
+      - id: refname-parsing
+        name: Parse pushed ref name
+        run: |
+          # Parse ref names of the form <chart>-<version>
+          echo "Parsing ref name '${GITHUB_REF_NAME:?}'..."
+          refname="$(echo "${GITHUB_REF_NAME}" | sed -E 's/^(.+)-([0-9]+.*)$/\1:\2/')"
+          lookup() { cut -d ':' -f "${1:?}"; }
+          chart="$(echo "${refname:?}" | lookup 1)"
+          version="$(echo "${refname}" | lookup 2)"
+          echo "chart=${chart:?}" >> "${GITHUB_OUTPUT}"
+          echo "version=${version:?}" >> "${GITHUB_OUTPUT}"
+          echo "Parsed values:"
+          echo "  chart   = ${chart}"
+          echo "  version = ${version}"
+
+  chart-checks:
+    needs:
+      - tag-parser
+    uses: ./.github/workflows/checks.yaml
+    with:
+      chart: ${{ needs.tag-parser.outputs.chart }}
+      enable-change-detection: false
+
+  chart-info:
+    runs-on: ubuntu-latest
+    needs:
+      - chart-checks
+      - tag-parser
+    outputs:
+      name: ${{ matrix.chart.name }}
+      version: ${{ matrix.chart.version}}
+      refname: ${{ matrix.chart.name }}-${{ matrix.chart.version }}
+      path: ${{ matrix.chart.path }}
+    strategy:
+      fail-fast: true
+      matrix:
+        chart: ${{ fromJSON(needs.chart-checks.outputs.charts) }}
+    steps:
+      - name: Find expected chart
+        run: |
+          test "${{ matrix.chart.name }}" = "${{ needs.tag-parser.outputs.chart }}"
+
+  version-check:
+    runs-on: ubuntu-latest
+    needs:
+      - chart-info
+      - tag-parser
+    steps:
+      - name: Check chart version
+        run: |
+          curver="${{ needs.chart-info.outputs.version }}"
+          tagver="${{ needs.tag-parser.outputs.version }}"
+          if test "${curver:?}" != "${tagver:?}"; then
+            echo "::error::Chart version '${curver}' does not match tag version '${tagver}'!"
+            exit 1
+          fi
+
+  chart-releaser:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - chart-info
+      - chart-checks
+      - version-check
+    env:
+      CR_CONFIG_FILE: ./configs/chart-releaser.yaml
+      CR_GIT_REPO: ${{ github.event.repository.name }}
+      CR_OWNER: ${{ github.event.repository.owner.name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Git configuration
+        run: |
+          git config user.name "${{ github.event.pusher.name }}"
+          git config user.email "${{ github.event.pusher.email }}"
+      - name: Install chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          install_only: true
+      - name: Package requested chart
+        run: |
+          cr package "${{ needs.chart-info.outputs.path }}" \
+            --config "${{ env.CR_CONFIG_FILE }}"
+      - name: Upload chart package
+        run: |
+          cr upload --config "${{ env.CR_CONFIG_FILE }}" \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --commit "${{ github.sha }}"
+      - name: Update chart repository index
+        run: |
+          cr index --config "${{ env.CR_CONFIG_FILE }}" \
+            --token "${{ secrets.GITHUB_TOKEN }}" \
+            --push

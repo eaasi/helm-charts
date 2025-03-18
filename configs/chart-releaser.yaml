@@ -1,0 +1,5 @@
+# chart-releaser configuration (https://github.com/helm/chart-releaser)
+
+pages-branch: pages
+skip-existing: true
+make-release-latest: false
