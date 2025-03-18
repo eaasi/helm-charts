@@ -58,8 +58,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - *install-just-step
-      - name: Start Minikube cluster
+      - name: Install Minikube
         uses: medyagh/setup-minikube@v0.0.20
+        with:
+          start: false
+      - name: Start Minikube cluster
+        run: just cluster-start
       - *install-helm-step
       - *install-ct-step
       - *add-chart-repos-step
