@@ -1,6 +1,10 @@
 name: checks
 on:
   workflow_call:
+    outputs:
+      charts:
+        description: List of validated charts
+        value: ${{ jobs.validation.outputs.charts }}
 
 permissions:
   contents: read
@@ -38,6 +42,8 @@ jobs:
 
   validation:
     runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.ct-log-parser.outputs.charts }}
     env:
       CHART_TESTING_LOG: chart-testing.log
     steps:
