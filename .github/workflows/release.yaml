@@ -94,6 +94,7 @@ jobs:
       CR_CONFIG_FILE: ./configs/chart-releaser.yaml
       CR_GIT_REPO: ${{ github.event.repository.name }}
       CR_OWNER: ${{ github.event.repository.owner.name }}
+      RELEASE_NOTES_FILE_NAME: RELEASE.md
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -113,6 +114,12 @@ jobs:
           install_only: true
       - name: Add external chart repositories
         run: just add-chart-repos
+      - name: Extract chart's release notes
+        uses: eaasi/release-notes-action@v0.6
+        with:
+          changelog-file: ${{ needs.chart-info.outputs.path }}/CHANGELOG.md
+          release-notes-file: ${{ needs.chart-info.outputs.path }}/${{ env.RELEASE_NOTES_FILE_NAME }}
+          release-version: '${{ needs.chart-info.outputs.refname }}'
       - name: Package requested chart
         run: |
           cr package "${{ needs.chart-info.outputs.path }}" \
