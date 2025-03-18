@@ -1,0 +1,40 @@
+name: CD
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  checks:
+    uses: ./.github/workflows/checks.yaml
+
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs:
+      - checks
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Configure Git
+        run: |
+          git config user.name "${{ github.event.pusher.name }}"
+          git config user.email "${{ github.event.pusher.email }}"
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.7.0
+        with:
+          config: ./configs/chart-releaser.yaml
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
