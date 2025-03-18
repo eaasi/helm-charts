@@ -32,7 +32,8 @@ jobs:
         with:
           python-version: '3.x'
           check-latest: true
-      - name: Install Just
+      - &install-just-step
+        name: Install Just
         uses: ./.github/actions/setup-just
       - &install-helm-step
         name: Install Helm
@@ -40,7 +41,8 @@ jobs:
       - &install-ct-step
         name: Install chart-testing
         uses: helm/chart-testing-action@v2.7.0
-      - name: Add external chart repositories
+      - &add-chart-repos-step
+        name: Add external chart repositories
         run: just add-chart-repos
       - name: Run chart linters and validators
         env:
@@ -55,10 +57,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - *install-just-step
       - name: Start Minikube cluster
         uses: medyagh/setup-minikube@v0.0.20
       - *install-helm-step
       - *install-ct-step
+      - *add-chart-repos-step
       - name: Install and test charts
         run: ct install --config ./configs/chart-testing.yaml --all
 
