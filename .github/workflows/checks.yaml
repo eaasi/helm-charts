@@ -103,9 +103,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Run spell checker
-        uses: crate-ci/typos@v1.29.7
-        with:
-          config: ./configs/typos.toml
+        uses: ./.github/actions/check-typos
 
   changelog-checker:
     runs-on: ubuntu-latest
