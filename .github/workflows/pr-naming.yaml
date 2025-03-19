@@ -1,0 +1,89 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Workflow for enforcing PR naming conventions
+
+name: pr-naming
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+
+permissions:
+  contents: none
+
+env:
+  COMMIT_MESSAGE_FILE: ./commit-message.txt
+  CLICOLOR: 1
+
+jobs:
+  commit-message:
+    runs-on: ubuntu-latest
+    outputs:
+      content: ${{ steps.message-constructor.outputs.content }}
+    steps:
+      - id: message-constructor
+        name: Construct commit message
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: |
+            ${{ github.event.pull_request.body }}
+        run: |
+          print-commit-message() {
+            echo "${PR_TITLE:?}"
+            if test -n "${PR_BODY}"; then
+              echo ""
+              echo "${PR_BODY}"
+            fi
+          }
+          # Output commit message
+          {
+            echo "content<<ENDOFMSG"
+            print-commit-message
+            echo "ENDOFMSG"
+          } >> "${GITHUB_OUTPUT}"
+
+  commit-linter:
+    runs-on: ubuntu-latest
+    needs:
+      - commit-message
+    steps:
+      - &checkout-repository-step
+        name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github/actions
+            configs
+      - &prepare-commit-message-step
+        name: Prepare commit message
+        env:
+          COMMIT_MESSAGE: |
+            ${{ needs.commit-message.outputs.content }}
+        run: |
+          echo -n "${COMMIT_MESSAGE:?}" > "${{ env.COMMIT_MESSAGE_FILE }}"
+      - name: Install commit style linter
+        uses: ./.github/actions/setup-committed
+      - name: Run commit style linter
+        run: |
+          echo "Linting commit message:"
+          cat "${{ env.COMMIT_MESSAGE_FILE }}" | sed 's/^/> /'
+          echo ""
+          committed -vv --color=always \
+            --config ./configs/committed.toml \
+            --commit-file "${{ env.COMMIT_MESSAGE_FILE }}"
+          echo "DONE: PR follows the required naming conventions."
+
+  spell-checker:
+    runs-on: ubuntu-latest
+    needs:
+      - commit-message
+    steps:
+      - *checkout-repository-step
+      - *prepare-commit-message-step
+      - name: Run spell checker
+        uses: ./.github/actions/check-typos
+        with:
+          files: ${{ env.COMMIT_MESSAGE_FILE }}
