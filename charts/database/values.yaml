@@ -2,3 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Default values for the EAASI Database
+
+operator:
+  # -- Should the operator be enabled?
+  enabled: false
+  # -- Number of replicas
+  replicaCount: 1
