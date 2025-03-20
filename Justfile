@@ -7,6 +7,10 @@ cluster := "eaasi"
 # Name of the cluster namespace
 namespace := "eaasi"
 
+# Defaults for database-cluster
+database_cluster_name := "database-cluster"
+database_cluster_ns := "database"
+
 ### HELPERS ###################################################################
 
 # Run spell checker
@@ -112,3 +116,7 @@ cluster-delete name=cluster:
 # Deploy the database-operator
 deploy-database-operator name="database-operator" ns="cnpg-system" *args="--wait": \
   (upgrade "database" name ns "-f" (chart_dir / "database/configs/operator.yaml") args)
+
+# Deploy the database-cluster
+deploy-database-cluster name=database_cluster_name ns=database_cluster_ns *args="--wait": \
+  (upgrade "database" name ns args)
