@@ -12,3 +12,28 @@ operator:
   fullnameOverride: cnpg-operator
   # -- Override subchart name
   nameOverride: cloudnative-pg
+
+cluster:
+  # -- Should the cluster be enabled?
+  enabled: true
+  # -- Cluster name
+  name: &name eaasi
+  # -- Cluster mode of operation
+  mode: standalone
+  # -- Type of the CNPG database
+  type: postgresql
+  # -- Version of the CNPG database
+  version:
+    postgresql: "17.4"
+  # -- Cluster config
+  settings: &settings
+    # -- Number of instances
+    instances: 1
+    # -- Database storage config
+    storage:
+      size: 1Gi
+  # -- Override subchart name
+  nameOverride: database-cluster
+  # Pass renamed values to subchart...
+  fullnameOverride: *name
+  cluster: *settings
