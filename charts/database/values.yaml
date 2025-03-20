@@ -2,3 +2,17 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Default values for the EAASI Database
+
+# Configuration for the CNPG operator:
+# https://github.com/cloudnative-pg/charts/tree/main/charts/cloudnative-pg
+operator:
+  # -- Should the operator be enabled?
+  enabled: false
+  # -- Override operator name
+  fullnameOverride: cnpg-operator
+  # -- Override subchart name
+  # NOTE: The original chart name must be used here for now, because
+  #       the upstream chart hard-codes it in multiple templates!
+  nameOverride: cloudnative-pg
+  # -- Number of replicas
+  replicaCount: 1

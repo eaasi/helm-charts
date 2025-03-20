@@ -13,3 +13,4 @@ dependencies:
     name: cloudnative-pg
     version: "0.23.2"
     alias: operator
+    condition: operator.enabled
