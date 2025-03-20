@@ -14,3 +14,6 @@ dependencies:
     version: "0.23.2"
     alias: operator
     condition: operator.enabled
+  - repository: "@cnpg"
+    name: cluster
+    version: "0.2.1"
