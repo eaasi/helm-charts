@@ -106,3 +106,9 @@ cluster-unpause name=cluster:
 # Delete a Minikube cluster
 cluster-delete name=cluster:
   minikube delete --profile "{{ name }}"
+
+### EAASI #####################################################################
+
+# Deploy the database-operator
+deploy-database-operator name="database-operator" ns="cnpg-system" *args="--wait": \
+  (upgrade "database" name ns "-f" (chart_dir / "database/configs/operator.yaml") args)
