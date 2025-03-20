@@ -101,6 +101,18 @@ Before deploying anything, the chart repositories for all dependencies must be a
 $ just add-chart-repos
 ```
 
+The [database](./charts/database) operator can be deployed with:
+
+```console
+$ just deploy-database-operator  # <name> <namespace>
+```
+
+Then, a [database](./charts/database) cluster can be deployed with:
+
+```console
+$ just deploy-database-cluster  # <name> <namespace>
+```
+
 ## License
 
 Helm charts for EAASI are distributed under the [Apache-2.0](./LICENSE) license.
