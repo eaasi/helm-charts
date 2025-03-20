@@ -19,6 +19,7 @@ $ helm search repo eaasi
 ## Charts
 
 For more details, see the documentation for each chart:
+- [database](./charts/database/README.md)
 
 ## License
 
