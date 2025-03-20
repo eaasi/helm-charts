@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Override values for installing the operator
+
+operator:
+  # -- Enable the operator
+  enabled: true
+
+cluster:
+  # -- Disable the cluster
+  enabled: false
