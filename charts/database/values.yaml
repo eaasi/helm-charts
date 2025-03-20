@@ -45,3 +45,14 @@ cluster:
     # -- Database storage config
     storage:
       size: 1Gi
+  # -- PgBouncer poolers
+  poolers:
+    - name: rw
+      type: rw
+      instances: 1
+      poolMode: transaction
+      parameters:
+        max_client_conn: "250"
+        default_pool_size: "20"
+        reserve_pool_size: "5"
+        min_pool_size: "5"
