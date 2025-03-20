@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: database
+version: "0.1.0"
+description: EAASI Database Helm Chart
+type: application
+sources:
+  - https://github.com/eaasi/helm-charts
