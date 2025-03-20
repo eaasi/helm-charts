@@ -22,3 +22,8 @@ allowed_types = [
 	"refactor",
 	"test",
 ]
+
+# allowed commit scopes
+allowed_scopes = [
+	"database",
+]
