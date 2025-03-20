@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+{{- if and .Values.operator.enabled .Values.cluster.enabled -}}
+{{- fail "Either the operator or the cluster should be enabled, not both!" -}}
+{{- end -}}
