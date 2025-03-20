@@ -120,3 +120,8 @@ deploy-database-operator name="database-operator" ns="cnpg-system" *args="--wait
 # Deploy the database-cluster
 deploy-database-cluster name=database_cluster_name ns=database_cluster_ns *args="--wait": \
   (upgrade "database" name ns args)
+
+# Deploy all components
+deploy-all: \
+  (deploy-database-operator) \
+  (deploy-database-cluster) \
