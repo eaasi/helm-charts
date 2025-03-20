@@ -17,3 +17,4 @@ dependencies:
 - repository: https://cloudnative-pg.github.io/charts
   name: cluster
   version: "0.2.1"
+  condition: cluster.enabled

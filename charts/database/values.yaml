@@ -8,3 +8,24 @@ operator:
   enabled: false
   # -- Number of replicas
   replicaCount: 1
+
+cluster:
+  # -- Should the cluster be enabled?
+  enabled: true
+  # -- Cluster mode of operation
+  mode: standalone
+  # -- Type of the CNPG database
+  type: postgresql
+  # -- Version of the CNPG database
+  version:
+    postgresql: "17"
+  # -- Cluster config
+  settings: &settings
+    # -- Number of instances
+    instances: 1
+    # -- Database storage config
+    storage:
+      size: 1Gi
+
+  # Pass renamed values to subchart...
+  cluster: *settings
