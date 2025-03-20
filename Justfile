@@ -43,7 +43,7 @@ update-changelog chart version="" dir=(chart_dir / chart):
 
 # Add external chart repositories
 add-chart-repos:
-  # TODO: add repos!
+  helm repo add "cnpg" "https://cloudnative-pg.github.io/charts"
 
 # Build dependencies for all charts
 build-chart-deps:
