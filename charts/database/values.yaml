@@ -37,6 +37,11 @@ cluster:
   cluster:
     # -- Number of instances
     instances: 1
+    # -- Affinity rules for Pods
+    affinity:
+      enablePodAntiAffinity: true
+      podAntiAffinityType: preferred
+      topologyKey: kubernetes.io/hostname
     # -- Database storage config
     storage:
       size: 1Gi
