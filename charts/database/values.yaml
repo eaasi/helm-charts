@@ -16,3 +16,27 @@ operator:
   nameOverride: cloudnative-pg
   # -- Number of replicas
   replicaCount: 1
+
+# Configuration for the CNPG cluster:
+# https://github.com/cloudnative-pg/charts/tree/main/charts/cluster
+cluster:
+  # -- Should the cluster be enabled?
+  enabled: true
+  # -- Override cluster name
+  fullnameOverride: eaasi
+  # -- Override subchart name
+  nameOverride: database-cluster
+  # -- Cluster mode of operation
+  mode: standalone
+  # -- Type of the CNPG database
+  type: postgresql
+  # -- Version of the CNPG database
+  version:
+    postgresql: "17.4"
+  # -- CNPG cluster config
+  cluster:
+    # -- Number of instances
+    instances: 1
+    # -- Database storage config
+    storage:
+      size: 1Gi

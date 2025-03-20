@@ -17,3 +17,4 @@ dependencies:
   - repository: "@cnpg"
     name: cluster
     version: "0.2.1"
+    condition: cluster.enabled
