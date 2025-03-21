@@ -84,6 +84,10 @@ render chart name=chart ns=namespace *args:
   helm template "{{ name }}" "{{ chart_dir / chart }}" \
     --namespace "{{ ns }}" {{ args }} | less
 
+# Test a Helm chart release
+test release ns=namespace *args:
+  helm test "{{ release }}" --namespace "{{ ns }}" {{ args }}
+
 ### MINIKUBE ##################################################################
 
 # Start a Minikube cluster
@@ -125,3 +129,11 @@ deploy-database-cluster name=database_cluster_name ns=database_cluster_ns *args=
 deploy-all: \
   (deploy-database-operator) \
   (deploy-database-cluster) \
+
+# Test the database-cluster
+test-database-cluster name=database_cluster_name ns=database_cluster_ns *args: \
+  (test name ns args)
+
+# Test all components
+test-all: \
+  (test-database-cluster) \
