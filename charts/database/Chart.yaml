@@ -3,7 +3,7 @@
 
 apiVersion: v2
 name: database
-version: "0.1.0"
+version: "0.5.0"
 description: EAASI Database Helm Chart
 type: application
 sources:
