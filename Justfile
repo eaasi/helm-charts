@@ -9,6 +9,7 @@ namespace := "eaasi"
 
 # External chart repositories
 cnpg_chart_repo_url := "https://cloudnative-pg.github.io/charts"
+ory_chart_repo_url := "https://k8s.ory.sh/helm/charts"
 
 ### HELPERS ###################################################################
 
@@ -32,6 +33,7 @@ validate chart="*":
     "quay.io/helmpack/chart-testing:v3.7.1" \
     ct lint --config "{{ config_dir }}/chart-testing.yaml" \
       --chart-repos "cnpg={{ cnpg_chart_repo_url }}" \
+      --chart-repos "ory={{ ory_chart_repo_url }}" \
       {{ if chart == "*" { "--all" } else { '--charts "' + (chart_dir / chart) + '"' } }}
 
 # Update chart's changelog
@@ -48,6 +50,7 @@ update-changelog chart:
 # Add required chart repositories
 add-chart-repos:
   helm repo add cnpg "{{ cnpg_chart_repo_url }}"
+  helm repo add ory "{{ ory_chart_repo_url }}"
 
 # Install a Helm chart
 install chart name=chart ns=namespace *args="":
