@@ -2,3 +2,9 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Default values for the EAASI Guestlist
+
+idp:
+  enabled: true
+
+sso:
+  enabled: true
