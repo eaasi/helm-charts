@@ -26,4 +26,5 @@ allowed_types = [
 # allowed commit scopes
 allowed_scopes = [
 	"database",
+	"guestlist",
 ]
