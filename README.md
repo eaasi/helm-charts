@@ -22,6 +22,7 @@ $ helm search repo eaasi
 
 For more details, see the documentation for each chart:
 - [database](./charts/database/README.md)
+- [guestlist](./charts/guestlist/README.md)
 
 ## Development
 
