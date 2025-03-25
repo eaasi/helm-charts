@@ -8,3 +8,8 @@ description: EAASI Guestlist Helm Chart
 type: application
 sources:
 - https://github.com/eaasi/helm-charts
+dependencies:
+- repository: https://k8s.ory.sh/helm/charts
+  name: kratos
+  version: "0.52.0"
+  alias: idp
