@@ -8,3 +8,17 @@ package idp
 
 // Should the IDP be enabled?
 enabled: bool | *true
+
+// Number of replicas
+replicaCount: int | *1
+
+// Version of Ory Kratos
+image: {
+	tag: string | *"v1.3.1"
+}
+
+// Override chart name
+nameOverride: "guestlist-idp"
+
+// Override resource name prefix
+fullnameOverride: string | *"idp"

@@ -8,5 +8,10 @@
 
 idp:
   enabled: true
+  replicaCount: 1
+  image:
+    tag: v1.3.1
+  nameOverride: guestlist-idp
+  fullnameOverride: idp
 sso:
   enabled: true
