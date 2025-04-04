@@ -22,3 +22,10 @@ nameOverride: "guestlist-idp"
 
 // Override resource name prefix
 fullnameOverride: string | *"idp"
+
+// Disable ingresses, which will be replaced
+// with equivalent Gateway API definitions!
+ingress: {
+	admin: enabled: false
+	public: enabled: false
+}
