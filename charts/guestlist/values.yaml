@@ -18,5 +18,9 @@ idp:
       enabled: false
     public:
       enabled: false
+  kratos:
+    automigration:
+      enabled: true
+      type: job
 sso:
   enabled: true

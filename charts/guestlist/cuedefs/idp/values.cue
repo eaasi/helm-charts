@@ -6,6 +6,10 @@
 
 package idp
 
+import (
+	Kratos "github.com/eaasi/helm-charts/guestlist/idp/kratos"
+)
+
 // Should the IDP be enabled?
 enabled: bool | *true
 
@@ -29,3 +33,6 @@ ingress: {
 	admin: enabled: false
 	public: enabled: false
 }
+
+// App config
+kratos: Kratos
