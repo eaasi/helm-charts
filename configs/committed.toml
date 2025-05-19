@@ -27,4 +27,5 @@ allowed_types = [
 allowed_scopes = [
 	"database",
 	"guestlist",
+	"common",
 ]
