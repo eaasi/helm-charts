@@ -77,7 +77,6 @@ render chart name=chart ns=namespace *args="":
 cluster-boot name=cluster ns=namespace *args="":
   minikube start --profile "{{ name }}" \
     --namespace "{{ ns }}" \
-    --cni "cilium" \
     --cpus "no-limit" \
     --memory "no-limit" \
     --force-systemd=true \
