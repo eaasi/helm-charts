@@ -14,7 +14,8 @@ fullnameOverride: *"" | string
 
 gateway: ingress: Gateway & {
   {
-    name: "ingress-gateway",
+    fullnameOverride: "",
+    name: "",
     className: "",
     listeners: [
       {name: "http"}

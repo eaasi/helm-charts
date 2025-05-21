@@ -10,7 +10,8 @@ nameOverride: ""
 fullnameOverride: ""
 gateway:
   ingress:
-    name: ingress-gateway
+    fullnameOverride: ""
+    name: ""
     className: ""
     annotations: {}
     labels: {}

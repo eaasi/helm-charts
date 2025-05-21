@@ -5,7 +5,9 @@
 
 package gateway
 
-name!: string
+fullnameOverride: *"" | string
+
+name: *"" | string
 
 className!: string
 
