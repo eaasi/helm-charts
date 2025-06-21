@@ -13,6 +13,10 @@ metadata:
     {{- end }}
 spec:
   gatewayClassName: {{ .Values.gateway.ingress.className }}
+  {{- if .Values.gateway.ingress.infrastructure }}
+  infrastructure:
+    {{- toYaml .Values.gateway.ingress.infrastructure | nindent 4 }}
+  {{- end }}
   listeners:
     {{- range .Values.gateway.ingress.listeners | default (list (dict "name" "http" "protocol" "HTTP" "port" 80)) }}
     - name: {{ .name }}

@@ -21,6 +21,13 @@ gateway:
     annotations: {}
     # Labels for the Gateway resource (optional)
     labels: {}
+    # Specify labels and annotations for the infrastructure created by the Gateway API controller
+    # https://gateway-api.sigs.k8s.io/guides/infrastructure
+    infrastructure: {}
+    #  labels:
+    #    my-label: ...
+    #  annotations:
+    #    my-annotation: ...
     # Configure the listener(s) for the Gateway
     listeners:
       - name: http
