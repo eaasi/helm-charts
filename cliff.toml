@@ -1,0 +1,78 @@
+# git-cliff configuration (https://github.com/orhun/git-cliff)
+
+[changelog]
+trim = false
+
+header = """
+# Changelog
+"""
+
+body = """
+## {{ version }} - *{{ timestamp | date(format="%Y-%m-%d") }}*
+{% set scope = get_env(name="cliff_commit_scope") -%}
+{% set commits = commits | filter(attribute="scope", value=scope) -%}
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | split(pat=":") | last | trim }}
+
+{%   for commit in commits -%}
+{%     set message = commit.message | upper_first -%}
+{%     if commit.breaking -%}
+{%       set message = "(**!**) " ~ message -%}
+{%     endif -%}
+{%     set short_sha = commit.id | truncate(length=7, end="") -%}
+{%     set commit_url = "<REPO-URL>/commit/" ~ commit.id -%}
+{%     set ref = "[`" ~ short_sha ~ "`](" ~ commit_url ~ ")" -%}
+{%     if commit.remote.username -%}
+{%       set ref = ref ~ " by @" ~ commit.remote.username -%}
+{%     endif -%}
+{%     if commit.remote.pr_number -%}
+{%       set pr_num = commit.remote.pr_number -%}
+{%       set pr_url = "<REPO-URL>/pull/" ~ pr_num -%}
+{%       set ref = ref ~ " in [#" ~ pr_num ~ "](" ~ pr_url ~ ")" -%}
+{%     endif -%}
+- {{ message }} - ({{ ref }})
+{%     set include_commit_body = get_env(name="cliff_include_commit_body", default="false") -%}
+{%     set include_commit_body = include_commit_body == "true" -%}
+{%     if include_commit_body and commit.body %}
+  {{ commit.body | indent(prefix="  ") }}
+
+{%     endif -%}
+{%   endfor -%}
+{% endfor -%}
+{% if previous.version -%}
+{%   set diff_url = "<REPO-URL>/compare/" ~ previous.version ~ ".." ~ version %}
+The more detailed changelog for `{{ version }}` can be found [here]({{ diff_url }}).
+{% endif -%}
+"""
+
+postprocessors = [
+  # Replace repository placeholder with the real URL
+  { pattern = "<REPO-URL>", replace = "https://github.com/eaasi/helm-charts" },
+]
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+filter_commits = false
+split_commits = false
+sort_commits = "oldest"
+topo_order = false
+
+commit_preprocessors = [
+  # Replace issue references with their remote link template
+  { pattern = '([\(\s]+)#([0-9]+)', replace = "${1}[#${2}](<REPO-URL>/issues/${2})"},
+]
+
+commit_parsers = [
+  { message = "^feat", group = "1: Features" },
+  { message = "^fix", group = "2: Bug Fixes" },
+  { message = "^refactor", group = "3: Refactoring" },
+  { message = "^test", group = "4: Testing" },
+  { message = "^ci", group = "5: Continuous Integration" },
+  { message = "^docs", group = "6: Documentation" },
+  { message = ".*", group = "7: Miscellaneous" },
+]
+
+[remote.github]
+owner = "eaasi"
+repo = "helm-charts"

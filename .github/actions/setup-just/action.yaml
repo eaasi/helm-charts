@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+name: setup-just
+description: Helper for installing Just
+runs:
+  using: composite
+  steps:
+    - name: Install Just
+      uses: taiki-e/install-action@v2
+      with:
+        tool: just@1.40.0

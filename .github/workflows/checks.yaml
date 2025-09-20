@@ -1,0 +1,130 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+# Reusable workflow for running various checks on Helm charts
+
+name: checks
+on:
+  workflow_call:
+    inputs:
+      enable-change-detection:
+        description: Enable change detection
+        default: false
+        type: boolean
+      chart:
+        description: Limit checks to a specific chart
+        default: ''
+        type: string
+    outputs:
+      charts:
+        description: List of validated charts
+        value: ${{ jobs.helm-linter.outputs.charts }}
+
+permissions:
+  contents: read
+
+env:
+  CLICOLOR: 1
+
+jobs:
+  helm-linter:
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.ct-log-parser.outputs.charts }}
+    env:
+      CHART_TESTING_LOG: chart-testing.log
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch whole history required for change detection (if enabled)
+          fetch-depth: ${{ (inputs.enable-change-detection) && '0' || '1' }}
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          check-latest: true
+      - &install-just-step
+        name: Install Just
+        uses: ./.github/actions/setup-just
+      - &install-helm-step
+        name: Install Helm
+        uses: ./.github/actions/setup-helm
+      - &install-ct-step
+        name: Install chart-testing
+        uses: helm/chart-testing-action@v2.7.0
+      - &add-chart-repos-step
+        name: Add external chart repositories
+        run: just add-chart-repos
+      - name: Run chart linters and validators
+        run: |
+          set -o pipefail
+          if ${{ inputs.enable-change-detection }}; then
+            # Enable change detection if requested
+            set -- "--target-branch" "main"
+          elif test -n "${{ inputs.chart }}"; then
+            # Process only the specified chart
+            set -- "--charts" "./charts/${{ inputs.chart }}"
+          else
+            # Process all charts
+            set -- "--all"
+          fi
+          ct lint --config ./configs/chart-testing.yaml "$@" \
+            | tee "${{ env.CHART_TESTING_LOG }}"
+      - id: ct-log-parser
+        name: Parse chart-testing logs
+        uses: eaasi/chart-list-action@v0.3
+        with:
+          ct-log-file: ${{ env.CHART_TESTING_LOG }}
+
+  helm-tester:
+    runs-on: ubuntu-latest
+    needs:
+      - helm-linter
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - *install-just-step
+      - name: Install Minikube
+        uses: medyagh/setup-minikube@v0.0.20
+        with:
+          start: false
+      - name: Start Minikube cluster
+        run: just cluster-start
+      - *install-helm-step
+      - *install-ct-step
+      - *add-chart-repos-step
+      - name: Install and test charts
+        run: ct install --config ./configs/chart-testing.yaml --all
+
+  spell-checker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run spell checker
+        uses: ./.github/actions/check-typos
+
+  changelog-checker:
+    runs-on: ubuntu-latest
+    needs:
+      - helm-linter
+      - spell-checker
+    if: ${{ needs.helm-linter.outputs.charts != '[]' }}
+    strategy:
+      matrix:
+        chart: ${{ fromJSON(needs.helm-linter.outputs.charts) }}
+    env:
+      CHANGELOG_FILE: ${{ matrix.chart.path }}/CHANGELOG.md
+    steps:
+      - name: Checkout chart's changelog
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: ${{ env.CHANGELOG_FILE }}
+      - name: Check chart's changelog
+        uses: eaasi/release-notes-action@v0.6
+        with:
+          changelog-file: ${{ env.CHANGELOG_FILE }}
+          release-version: ${{ matrix.chart.name }}-${{ matrix.chart.version }}
+        # Ignore missing changelogs for default chart version
+        continue-on-error: ${{ matrix.chart.version == '0.1.0' }}

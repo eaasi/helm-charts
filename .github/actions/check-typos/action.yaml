@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+name: check-typos
+description: Helper for running Typos
+inputs:
+  files:
+    description: Files to check
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Install and run Typos
+      uses: crate-ci/typos@v1.29.7
+      with:
+        config: ./configs/typos.toml
+        files: ${{ inputs.files }}
