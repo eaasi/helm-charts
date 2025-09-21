@@ -21,6 +21,7 @@ $ helm search repo eaasi
 ## Charts
 
 For more details, see the documentation for each chart:
+- [database](./charts/database/README.md)
 
 ## Development
 
@@ -111,6 +112,18 @@ Next, rebuild all required chart dependencies with:
 
 ```console
 $ just build-chart-deps
+```
+
+The [database-operator](./charts/database) can be deployed with:
+
+```console
+$ just deploy-database-operator  # <name> <namespace>
+```
+
+Then, a [database-cluster](./charts/database) can be deployed with:
+
+```console
+$ just deploy-database-cluster  # <name> <namespace>
 ```
 
 ## License

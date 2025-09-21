@@ -24,3 +24,8 @@ allowed_types = [
   "style",
   "test",
 ]
+
+# allowed commit scopes
+allowed_scopes = [
+  "database",
+]

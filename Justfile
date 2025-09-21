@@ -7,6 +7,10 @@ cluster := "eaasi"
 # Name of the cluster namespace
 namespace := "eaasi"
 
+# Defaults for database-cluster
+database_cluster_name := "database-cluster"
+database_cluster_ns := "database"
+
 ### HELPERS ###################################################################
 
 # Run spell checker
@@ -43,7 +47,7 @@ update-changelog chart version="" dir=(chart_dir / chart):
 
 # Add external chart repositories
 add-chart-repos:
-  # TODO: add repos!
+  helm repo add "cnpg" "https://cloudnative-pg.github.io/charts"
 
 # Build dependencies for all charts
 build-chart-deps:
@@ -80,6 +84,10 @@ render chart name=chart ns=namespace *args:
   helm template "{{ name }}" "{{ chart_dir / chart }}" \
     --namespace "{{ ns }}" {{ args }} | less
 
+# Test a Helm chart release
+test release ns=namespace *args:
+  helm test "{{ release }}" --namespace "{{ ns }}" {{ args }}
+
 ### MINIKUBE ##################################################################
 
 # Start a Minikube cluster
@@ -106,3 +114,26 @@ cluster-unpause name=cluster:
 # Delete a Minikube cluster
 cluster-delete name=cluster:
   minikube delete --profile "{{ name }}"
+
+### EAASI #####################################################################
+
+# Deploy the database-operator
+deploy-database-operator name="database-operator" ns="cnpg-system" *args="--wait": \
+  (upgrade "database" name ns "-f" (chart_dir / "database/configs/operator.yaml") args)
+
+# Deploy the database-cluster
+deploy-database-cluster name=database_cluster_name ns=database_cluster_ns *args="--wait": \
+  (upgrade "database" name ns args)
+
+# Deploy all components
+deploy-all: \
+  (deploy-database-operator) \
+  (deploy-database-cluster) \
+
+# Test the database-cluster
+test-database-cluster name=database_cluster_name ns=database_cluster_ns *args: \
+  (test name ns args)
+
+# Test all components
+test-all: \
+  (test-database-cluster) \

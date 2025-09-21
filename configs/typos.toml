@@ -6,6 +6,9 @@ extend-ignore-re = [
   "(?Rm)^.*(#|//)\\s*spellchecker:disable-line$",
   # ignore blocks with "spellchecker:<on|off>"
   "(?s)(#|//)\\s*spellchecker:off.*?\\n\\s*(#|//)\\s*spellchecker:on",
+  # ignore false positives triggered by "ba" surrounded by numbers
+  "[0-9]+ba",
+  "ba[0-9]+",
 ]
 
 [default.extend-words]

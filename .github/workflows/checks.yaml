@@ -92,10 +92,13 @@ jobs:
       - name: Start Minikube cluster
         run: just cluster-start
       - *install-helm-step
-      - *install-ct-step
       - *add-chart-repos-step
-      - name: Install and test charts
-        run: ct install --config ./configs/chart-testing.yaml --all
+      - name: Build chart dependencies
+        run: just build-chart-deps
+      - name: Install charts
+        run: just deploy-all
+      - name: Test charts
+        run: just test-all
 
   spell-checker:
     runs-on: ubuntu-latest

@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+apiVersion: v2
+name: database
+version: "0.5.0"
+description: EAASI Database Helm Chart
+type: application
+sources:
+  - https://github.com/eaasi/helm-charts
+dependencies:
+  - repository: "@cnpg"
+    name: cloudnative-pg
+    version: "0.23.2"
+    alias: operator
+    condition: operator.enabled
+  - repository: "@cnpg"
+    name: cluster
+    version: "0.2.1"
+    condition: cluster.enabled
