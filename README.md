@@ -17,3 +17,5 @@ $ helm search repo eaasi
 ## Charts
 
 For more details, see the documentation for each chart:
+
+- [database](https://github.com/eaasi/helm-charts/blob/main/charts/database/README.md)
