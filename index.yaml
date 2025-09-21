@@ -1,0 +1,25 @@
+apiVersion: v1
+entries:
+  database:
+  - apiVersion: v2
+    created: "2025-09-21T05:53:01.473823131Z"
+    dependencies:
+    - alias: operator
+      condition: operator.enabled
+      name: cloudnative-pg
+      repository: '@cnpg'
+      version: 0.23.2
+    - condition: cluster.enabled
+      name: cluster
+      repository: '@cnpg'
+      version: 0.2.1
+    description: EAASI Database Helm Chart
+    digest: 61f8699a9d95e2a45f5a862e2a5a909c4173e43edec04a933100116d89c2f034
+    name: database
+    sources:
+    - https://github.com/eaasi/helm-charts
+    type: application
+    urls:
+    - https://github.com/eaasi/helm-charts/releases/download/database-0.5.0/database-0.5.0.tgz
+    version: 0.5.0
+generated: "2025-09-21T05:53:01.473832669Z"
