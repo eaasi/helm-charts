@@ -94,6 +94,7 @@ jobs:
       CR_CONFIG_FILE: ./configs/chart-releaser.yaml
       CR_GIT_REPO: ${{ github.event.repository.name }}
       CR_OWNER: ${{ github.event.repository.owner.name }}
+      CR_INDEX_PATH: ./.cr-index
       RELEASE_NOTES_FILE_NAME: RELEASE.md
     steps:
       - name: Checkout repository
@@ -132,6 +133,7 @@ jobs:
             --commit "${{ github.sha }}"
       - name: Update chart repository index
         run: |
+          mkdir -p "${{ env.CR_INDEX_PATH }}"
           cr index --config "${{ env.CR_CONFIG_FILE }}" \
             --token "${{ secrets.GITHUB_TOKEN }}" \
             --push
