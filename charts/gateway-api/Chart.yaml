@@ -8,3 +8,4 @@ description: Helm chart for installing Gateway API CRDs
 type: application
 sources:
   - https://github.com/eaasi/helm-charts
+appVersion: "v1.3.0" # Gateway API version
