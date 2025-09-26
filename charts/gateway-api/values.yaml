@@ -2,3 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Default values for the Gateway API
+
+# Release configuration (for internal use only):
+# https://gateway-api.sigs.k8s.io/guides/#installing-gateway-api
+release:
+  # -- Release version
+  version: "v1.3.0"
+  # -- Release channel (stable|experimental)
+  channel: experimental
