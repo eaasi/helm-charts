@@ -21,6 +21,8 @@ $ helm search repo eaasi
 ## Charts
 
 For more details, see the documentation for each chart:
+
+- [gateway-api](./charts/gateway-api/README.md)
 - [database](./charts/database/README.md)
 
 ## Development
