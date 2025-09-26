@@ -10,3 +10,8 @@ release:
   version: "v1.3.0"
   # -- Release channel (stable|experimental)
   channel: experimental
+
+# -- CRD-related configuration
+crds:
+  # -- Should the CRDs be enabled?
+  enabled: true
