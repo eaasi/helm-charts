@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2025 Yale University
+# SPDX-License-Identifier: Apache-2.0
+
+{{- if ne .Chart.AppVersion .Values.release.version }}
+  {{- fail "Chart's app version and release version mismatch!" }}
+{{- end -}}
+
+{{- if .Values.crds.enabled -}}
+  {{/* Split bundle into multiple documents */}}
+  {{- $bundle := include "gwapi.bundle" . }}
+  {{- $docs := regexSplit "---" $bundle -1 -}}
+  {{/* Check each document, skipping empty ones... */}}
+  {{- range $i, $doc := $docs }}
+    {{- $crd := $doc | fromYaml }}
+    {{- if not $crd }}
+      {{- continue }}
+    {{- end -}}
+    {{/* Check CRD's version and channel... */}}
+    {{- $annotations := $crd.metadata.annotations }}
+    {{- $version := get $annotations "gateway.networking.k8s.io/bundle-version" }}
+    {{- $channel := get $annotations "gateway.networking.k8s.io/channel" }}
+    {{- if ne $version $.Values.release.version }}
+      {{- fail (printf "Unexpected bundle version found: %s" $version) }}
+    {{- end }}
+    {{- if ne $channel $.Values.release.channel }}
+      {{- fail (printf "Unexpected release channel found: %s" $channel) }}
+    {{- end }}
+  {{- end }}
+{{- end -}}
