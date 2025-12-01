@@ -3,7 +3,7 @@
 
 apiVersion: v2
 name: gateway-api
-version: "0.1.0"
+version: "0.3.0"
 description: Helm chart for installing Gateway API CRDs
 type: application
 sources:
